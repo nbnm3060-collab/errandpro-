@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ErrandPro - Earn Daily</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{font-family:system-ui} .blue{background:#1e2a9a} .orange{background:#ff5a00}
+.page{display:none} .page.active{display:block}
+.nav-btn{color:#999} .nav-btn.active{color:#1e2a9a}
+</style>
+</head>
+<body class="bg-gray-100 pb-24 max-w-md mx-auto min-h-screen">
+
+<div id="page-home" class="page active">
+  <div class="blue text-white p-5 rounded-b-[30px]">
+    <div class="flex justify-between"><h1 class="text-2xl font-bold">ErrandPro</h1><button onclick="showPage('signup')" class="bg-white text-blue-900 px-4 py-1 rounded-full font-bold text-sm">Login</button></div>
+    <h2 class="text-3xl font-bold mt-6">Earn Money<br>Doing Simple Tasks</h2>
+    <p class="text-white/80 mt-2 text-sm">Follow, Watch, Review — Get Paid 15th & 30th</p>
+    <p id="backendStatus" class="text-xs mt-2 bg-black/20 p-2 rounded-lg">Connecting to backend...</p>
+    <button onclick="showPage('signup')" class="orange w-full mt-3 py-3 rounded-full font-bold">Start Free Task →</button>
+    <p class="text-center text-xs mt-2">1 FREE Task • No Payment Needed</p>
+  </div>
+  <div class="p-5">
+    <h3 class="font-bold text-lg text-blue-900">Choose Your Plan</h3>
+    <div class="bg-white rounded-2xl p-4 mt-3 shadow"><div class="flex justify-between"><b>Starter</b><span class="text-orange-600 font-bold">₦1,000</span></div><p class="text-xs text-gray-500">• 2 Tasks/Day • Up to ₦300/day</p><button onclick="choosePlan('Starter',1000)" class="blue text-white w-full py-2 rounded-full mt-3 text-sm font-bold">Choose Starter</button></div>
+    <div class="bg-white rounded-2xl p-4 mt-3 shadow border-2 border-orange-500 relative"><span class="absolute -top-2 right-3 orange text-white text-[10px] px-2 rounded-full">MOST POPULAR</span><div class="flex justify-between"><b>Pro ⭐</b><span class="text-orange-600 font-bold">₦2,000</span></div><p class="text-xs text-gray-500">• 4 Tasks/Day • Up to ₦800/day</p><button onclick="choosePlan('Pro',2000)" class="orange text-white w-full py-2 rounded-full mt-3 text-sm font-bold">Choose Pro</button></div>
+    <div class="bg-blue-900 text-white rounded-2xl p-4 mt-3"><div class="flex justify-between"><b>Elite 👑</b><span>₦3,000</span></div><p class="text-xs">• 6 Tasks/Day • Up to ₦1,200/day</p><button onclick="choosePlan('Elite',3000)" class="bg-white text-blue-900 w-full py-2 rounded-full mt-3 text-sm font-bold">Choose Elite</button></div>
+  </div>
+  <div class="p-5 pt-0"><h3 class="font-bold">🏆 Leaderboard - Live</h3><div id="leaderboard" class="bg-white rounded-xl p-3 mt-2 shadow text-sm">Loading...</div></div>
+</div>
+
+<div id="page-signup" class="page p-5">
+  <h1 class="text-2xl font-bold text-blue-900">Join ErrandPro</h1>
+  <p class="text-sm text-gray-500">Real account - saves for backend</p>
+  <div class="bg-white rounded-2xl p-4 mt-4 shadow space-y-3">
+    <input id="username" placeholder="@username" class="w-full border rounded-xl p-3 text-sm">
+    <input id="phone" placeholder="Phone / WhatsApp" class="w-full border rounded-xl p-3 text-sm">
+    <input id="password" type="password" placeholder="Password" class="w-full border rounded-xl p-3 text-sm">
+    <input id="referral" placeholder="Referral Code (optional)" class="w-full border rounded-xl p-3 text-sm">
+    <div class="bg-orange-50 border rounded-xl p-3 text-xs"><b>Selected: <span id="selectedPlan">Starter - ₦1,000</span></b></div>
+    <button onclick="doSignup()" id="signupBtn" class="orange text-white w-full py-3 rounded-full font-bold">Create Real Account →</button>
+    <p class="text-center text-xs text-gray-400">1 Account Per Device</p>
+  </div>
+  <p id="signupMsg" class="text-center text-sm mt-3 font-bold"></p>
+</div>
+
+<div id="page-tasks" class="page">
+  <div class="blue text-white p-5 rounded-b-[30px]"><h1 class="text-xl font-bold">Tasks</h1><div class="bg-blue-800 rounded-xl p-3 mt-3 flex justify-between text-sm"><span>Wallet: <b id="walletBal">₦0</b></span><span>Pay: <b>15th & 30th</b></span></div></div>
+  <div class="p-4 space-y-3" id="taskList">Loading tasks...</div>
+</div>
+
+<div id="page-wallet" class="page p-5">
+  <h1 class="text-2xl font-bold">Hello, <span id="helloUser">@user</span></h1>
+  <div class="blue text-white rounded-2xl p-4 mt-4"><p class="text-xs">Total Balance</p><h2 class="text-4xl font-bold" id="totalBal">₦0</h2><div class="flex gap-4 mt-3 text-sm"><div>🔒 Task: <b id="taskBal">₦0</b></div><div>⚡ Referral: <b id="refBal">₦0</b></div></div></div>
+  <button onclick="withdrawReferral()" class="orange text-white w-full py-3 rounded-xl mt-3 font-bold">⚡ Withdraw Referral (7% charge)</button>
+  <button onclick="loadWallet()" class="w-full py-2 mt-2 border rounded-xl text-sm">Refresh Wallet 🔄</button>
+  <div class="bg-white rounded-xl p-3 mt-3 shadow"><b>Referral Link</b><br><span class="text-xs" id="refLink">errandproo.netlify.app</span><button onclick="copyRef()" class="border border-orange-500 text-orange-600 px-3 py-1 rounded-full text-sm font-bold float-right">Copy</button></div>
+  <div class="bg-white rounded-xl p-3 mt-3 shadow text-sm" id="walletLeaderboard">Loading...</div>
+</div>
+
+<div id="page-admin" class="page p-5"><h1 class="font-bold text-2xl">Admin</h1><div id="adminStats" class="mt-3">Loading...</div><button onclick="loadAdmin()" class="blue text-white px-4 py-2 rounded-full mt-3">Refresh Admin</button></div>
+
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t flex justify-around py-3 text-xs font-bold z-50">
+  <button onclick="showPage('home')" id="nav-home" class="nav-btn active">🏠<br>Home</button>
+  <button onclick="showPage('tasks')" id="nav-tasks" class="nav-btn">📋<br>Tasks</button>
+  <button onclick="showPage('wallet')" id="nav-wallet" class="nav-btn">💰<br>Wallet</button>
+  <button onclick="showPage('signup')" id="nav-signup" class="nav-btn">👤<br>Join</button>
+</div>
+
+<script>
+const API = 'https://errandpro-backend.onrender.com';
+let currentUser = localStorage.getItem('errandpro_user') || '';
+
+async function checkBackend(){
+  try{ let r=await fetch(API+'/'); let t=await r.text(); document.getElementById('backendStatus').innerText='✅ Backend Connected: '+t; }catch(e){ document.getElementById('backendStatus').innerText='❌ Backend not connected - wait 30s and refresh (Render dey sleep)'; }
+}
+function showPage(n){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+n).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); let nav=document.getElementById('nav-'+n); if(nav) nav.classList.add('active'); if(n==='tasks') loadTasks(); if(n==='wallet') loadWallet(); window.scrollTo(0,0); }
+function choosePlan(name,price){ document.getElementById('selectedPlan').innerText=name+' - ₦'+price.toLocaleString(); showPage('signup'); }
+
+async function doSignup(){
+  let username=document.getElementById('username').value.trim();
+  let phone=document.getElementById('phone').value.trim();
+  let password=document.getElementById('password').value;
+  let referral=document.getElementById('referral').value.trim();
+  if(!username||!password){ alert('Enter username & password'); return; }
+  document.getElementById('signupBtn').innerText='Creating...';
+  try{
+    let res=await fetch(API+'/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,phone,password,referral})});
+    let data=await res.json();
+    if(data.error){ document.getElementById('signupMsg').innerText=data.error; document.getElementById('signupMsg').style.color='red'; }
+    else{ currentUser=username; localStorage.setItem('errandpro_user',username); document.getElementById('helloUser').innerText=username; document.getElementById('refLink').innerText='errandproo.netlify.app/r/'+username; document.getElementById('signupMsg').innerText='✅ Account created for real! Welcome '+username; document.getElementById('signupMsg').style.color='green'; setTimeout(()=>showPage('tasks'),1000); }
+  }catch(e){ alert('Backend dey wake up, wait 30s try again - Render free dey sleep'); }
+  document.getElementById('signupBtn').innerText='Create Real Account →';
+}
+
+async function loadTasks(){
+  try{ let res=await fetch(API+'/api/tasks'); let tasks=await res.json();
+    document.getElementById('taskList').innerHTML=tasks.map(t=>`<div class="bg-white rounded-xl p-3 shadow"><div class="flex justify-between"><b>${t.title}</b><span class="orange text-white px-2 rounded-lg text-xs py-1">₦${t.price}</span></div><p class="text-xs text-gray-500">${t.link}</p><button onclick="uploadProof(${t.id})" class="orange text-white w-full py-2 rounded-lg mt-2 text-sm font-bold">Upload Screenshot</button></div>`).join('');
+  }catch(e){ document.getElementById('taskList').innerText='Backend dey wake up, refresh in 30s'; }
+}
+async function uploadProof(taskId){
+  if(!currentUser){ alert('Signup first'); showPage('signup'); return; }
+  let res=await fetch(API+'/api/proof',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:currentUser,taskId})});
+  let data=await res.json(); alert(data.message);
+}
+async function loadWallet(){
+  if(!currentUser){ document.getElementById('totalBal').innerText='₦0 - Signup first'; return; }
+  try{ let res=await fetch(API+'/api/wallet/'+currentUser); let d=await res.json(); document.getElementById('taskBal').innerText='₦'+d.taskBalance; document.getElementById('refBal').innerText='₦'+d.referralBalance; document.getElementById('totalBal').innerText='₦'+d.total; document.getElementById('walletBal').innerText='₦'+d.total; }catch(e){}
+  loadLeaderboard();
+}
+async function withdrawReferral(){
+  if(!currentUser){ alert('Signup first'); return; }
+  let res=await fetch(API+'/api/withdraw-referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:currentUser})});
+  let d=await res.json(); alert(d.message||d.error); loadWallet();
+}
+async function loadLeaderboard(){
+  try{ let res=await fetch(API+'/api/leaderboard'); let list=await res.json(); let html=list.length? list.map((u,i)=>`<div class="flex justify-between"><span>${i+1}. ${u.username}</span><b>₦${u.total}</b></div>`).join('') : 'No users yet - Be first!'; document.getElementById('leaderboard').innerHTML=html; document.getElementById('walletLeaderboard').innerHTML=html; }catch(e){}
+}
+function copyRef(){ navigator.clipboard.writeText(document.getElementById('refLink').innerText); alert('Copied!'); }
+async function loadAdmin(){ let res=await fetch(API+'/api/admin/stats'); let d=await res.json(); document.getElementById('adminStats').innerHTML=`<div class="grid grid-cols-2 gap-2"><div class="bg-white p-3 rounded-xl">Users: <b>${d.totalUsers}</b></div><div class="bg-white p-3 rounded-xl">Pending: <b>${d.pendingProofs}</b></div></div><pre class="text-xs mt-3 bg-white p-2 rounded-xl overflow-auto">${JSON.stringify(d.proofs,null,2)}</pre>`; }
+
+if(currentUser){ document.getElementById('helloUser').innerText=currentUser; document.getElementById('refLink').innerText='errandproo.netlify.app/r/'+currentUser; }
+checkBackend(); loadLeaderboard();
+</script>
+</body>
+</html>
